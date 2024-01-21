@@ -8,8 +8,8 @@ class BaseMenu(BaseModel):
 
 class Menu(BaseMenu):
     id: int
-    submenus_quantity: int | None = None
-    dishes_quantity: int | None = None
+    submenus_quantity: int = 0
+    dishes_quantity: int = 0
 
     class Config:
         orm_mode = True
@@ -26,7 +26,7 @@ class BaseSubMenu(BaseModel):
 
 class SubMenu(BaseSubMenu):
     id: int
-    dishes_quantity: int
+    dishes_quantity: int = 0
 
     class Config:
         orm_mode = True
