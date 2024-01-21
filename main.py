@@ -11,7 +11,7 @@ app = FastAPI()
 
 @app.get('/', description="Приветственная надпись", )
 async def greetings() -> dict:
-    return {'message': 'Hello world'}
+    return {'message': 'Greetings, sir'}
 
 
 app.include_router(menu_router, prefix='/api/v1/menus')
