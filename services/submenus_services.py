@@ -17,7 +17,6 @@ class SubMenuService:
             self.db.add(item)
             self.db.commit()
             self.db.refresh(item)
-            self.db.close()
             return item
         except IntegrityError:
             raise HTTPException(
@@ -35,12 +34,13 @@ class SubMenuService:
                 items_list.append(result)
             return items_list
 
-        return {'message': 'Нет записей в таблице меню'}
+        return {'message': 'Нет записей в таблице подменю'}
 
     def get(self, submenu_id: int) -> SubMenu:
         item = self.db.query(SubMenuTable).filter(SubMenuTable.id == submenu_id).first()
         if item:
             result = SubMenu(id=item.id, title=item.title, description=item.description)
+            result.dishes_quantity = len(item.dishes)
             return result
         raise HTTPException(
             status_code=404,

@@ -29,7 +29,7 @@ class DishesService:
         items = self.db.query(DishTable).all()
         if items:
             return items
-        return {'message': 'Нет записей в таблице меню'}
+        return {'message': 'Нет записей в таблице блюд'}
 
     def get(self, dish_id: int) -> Dish:
         item = self.db.query(DishTable).filter(DishTable.id == dish_id).first()

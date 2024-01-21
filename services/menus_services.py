@@ -41,6 +41,8 @@ class MenuService:
         item = self.db.query(MenuTable).filter(MenuTable.id == menu_id).first()
         if item:
             result = Menu(id=item.id, title=item.title, description=item.description)
+            result.submenus_quantity = len(item.submenus)
+            item.dishes_count = sum(len(s.dishes) for s in item.submenus)
             return result
         raise HTTPException(
             status_code=404,

@@ -8,7 +8,7 @@ service = DishesService()
 
 
 @router.get('/', description='Получение списка всех блюд')
-async def get_dishes() -> list[Dish]:
+async def get_dishes() -> list[Dish] | dict:
     return service.get_all()
 
 
