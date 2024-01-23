@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from decimal import Decimal
+
+from pydantic import BaseModel, Field
 
 
 class BaseMenu(BaseModel):
@@ -39,7 +41,7 @@ class SubMenuCreation(BaseSubMenu):
 class BaseDish(BaseModel):
     title: str
     description: str | None = None
-    price: float
+    price: Decimal = Field(decimal_places=2, gt=0)
 
 
 class Dish(BaseDish):
