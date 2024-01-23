@@ -17,14 +17,15 @@ class MenuService:
             self.db.add(db_item)
             self.db.commit()
             self.db.refresh(db_item)
+            item = Menu(id=db_item.id, title=data.title, description=data.description,
+                        submenus_count=0, dishes_count=0)
+            return item
         except IntegrityError:
             raise HTTPException(
                 status_code=409,
                 detail=f'Запись с таким именем уже существует'
             )
-        item = Menu(id=db_item.id, title=data.title, description=data.description,
-                    submenus_count=0, dishes_count=0)
-        return item
+
 
     def get_all(self) -> list[Menu] | dict:
         db_items = self.db.query(MenuTable).all()
@@ -60,7 +61,7 @@ class MenuService:
             )
         self.db.delete(db_item)
         self.db.commit()
-        return {'status': 'true', 'message': 'The menu has been deleted'}
+        return {'status': True, 'message': 'The menu has been deleted'}
 
     def update(self, menu_id: int, data: MenuCreation) -> Menu:
         db_item = self.db.query(MenuTable).filter(MenuTable.id == menu_id).first()

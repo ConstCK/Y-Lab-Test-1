@@ -4,23 +4,26 @@ from schemas.schemas import MenuCreation, Menu
 from services.menus_services import MenuService
 
 router = APIRouter()
+
+
 # service = MenuService()
 
 
 @router.get('/', description='Получение списка всех меню')
 async def get_menus(service: MenuService = Depends()) -> list[Menu] | dict:
-    return service.get_all()
+    result = service.get_all()
+    return result
 
 
 @router.get('/{menu_id}', description='Получение выбранного меню')
 async def get_menu(menu_id: int, service: MenuService = Depends()) -> Menu:
-    return service.get(menu_id)
+    result = service.get(menu_id)
+    return result
 
 
 @router.post('/', description='Создание нового меню')
 async def create_menu(data: MenuCreation, service: MenuService = Depends()) -> Menu:
     result = service.create(data)
-    # return {'message': f'Успешное создание объекта меню -> {result.title}'}
     return result
 
 

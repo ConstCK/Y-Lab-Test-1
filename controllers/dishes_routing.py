@@ -5,31 +5,32 @@ from services.dishes_services import DishesService
 
 router = APIRouter()
 
+
 @router.get('/', description='Получение списка всех блюд')
 async def get_dishes(service: DishesService = Depends()) -> list[Dish] | dict:
-    return service.get_all()
+    result = service.get_all()
+    return result
 
 
 @router.get('/{dish_id}', description='Получение выбранного блюда')
 async def get_dish(dish_id: int, service: DishesService = Depends()) -> Dish:
-    return service.get(dish_id)
+    result = service.get(dish_id)
+    return result
 
 
 @router.post('/', description='Создание нового блюда')
-async def create_dish(data: DishCreation, submenu_id: int, service: DishesService = Depends()) -> dict:
+async def create_dish(data: DishCreation, submenu_id: int, service: DishesService = Depends()) -> Dish:
     result = service.create(data, submenu_id)
-    return {'message': f'Успешное создание блюда -> {result.title}'}
+    return result
 
 
 @router.patch('/{dish_id}', description='Изменение выбранного блюда')
-async def update_dish(dish_id: int, data: DishCreation, service: DishesService = Depends()) -> dict:
-    service.update(dish_id, data)
-    return {'message': f'Запись с id = {dish_id} успешно изменена'}
+async def update_dish(dish_id: int, data: DishCreation, service: DishesService = Depends()) -> Dish:
+    result = service.update(dish_id, data)
+    return result
 
 
 @router.delete('/{dish_id}', description='Удаление выбранного блюда')
 async def delete_dish(dish_id: int, service: DishesService = Depends()) -> dict:
-    service.delete(dish_id)
-    return {'message': f'Запись с id = {dish_id} успешно удалена'}
-
-
+    result = service.delete(dish_id)
+    return result

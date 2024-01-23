@@ -8,27 +8,29 @@ router = APIRouter()
 
 @router.get('/', description='Получение списка всех подменю')
 async def get_submenus(service: SubMenuService = Depends()) -> list[SubMenu] | dict:
-    return service.get_all()
+    result = service.get_all()
+    return result
 
 
 @router.get('/{submenu_id}', description='Получение выбранного подменю')
 async def get_submenu(submenu_id: int, service: SubMenuService = Depends()) -> SubMenu:
-    return service.get(submenu_id)
+    result = service.get(submenu_id)
+    return result
 
 
 @router.post('/', description='Создание нового подменю')
-async def create_submenu(data: SubMenuCreation, menu_id: int, service: SubMenuService = Depends()) -> dict:
+async def create_submenu(data: SubMenuCreation, menu_id: int, service: SubMenuService = Depends()) -> SubMenu:
     result = service.create(data, menu_id)
-    return {'message': f'Успешное создание объекта меню -> {result.title}'}
+    return result
 
 
 @router.delete('/{submenu_id}', description='Удаление выбранного подменю')
 async def delete_submenu(submenu_id: int, service: SubMenuService = Depends()) -> dict:
-    service.delete(submenu_id)
-    return {'message': f'Запись с id = {submenu_id} успешно удалена'}
+    result = service.delete(submenu_id)
+    return result
 
 
 @router.patch('/{submenu_id}', description='Изменение выбранного подменю')
-async def update_submenu(submenu_id: int, data: SubMenuCreation, service: SubMenuService = Depends()) -> dict:
-    service.update(submenu_id, data)
-    return {'message': f'Запись с id = {submenu_id} успешно изменена'}
+async def update_submenu(submenu_id: int, data: SubMenuCreation, service: SubMenuService = Depends()) -> SubMenu:
+    result = service.update(submenu_id, data)
+    return result
