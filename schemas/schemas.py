@@ -9,7 +9,7 @@ class BaseMenu(BaseModel):
 
 
 class Menu(BaseMenu):
-    id: int
+    id: str
     submenus_count: int = 0
     dishes_count: int = 0
 
@@ -27,7 +27,7 @@ class BaseSubMenu(BaseModel):
 
 
 class SubMenu(BaseSubMenu):
-    id: int
+    id: str
     dishes_count: int = 0
 
     class Config:
@@ -45,7 +45,7 @@ class BaseDish(BaseModel):
 
 
 class Dish(BaseDish):
-    id: int
+    id: str
 
     class Config:
         orm_mode = True

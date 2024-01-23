@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 @router.get('/', description='Получение списка всех подменю')
-async def get_submenus(service: SubMenuService = Depends()) -> list[SubMenu] | dict:
+async def get_submenus(service: SubMenuService = Depends()) -> list[SubMenu] | list:
     result = service.get_all()
     return result
 
@@ -18,7 +18,7 @@ async def get_submenu(submenu_id: int, service: SubMenuService = Depends()) -> S
     return result
 
 
-@router.post('/', description='Создание нового подменю')
+@router.post('/', description='Создание нового подменю', status_code=201)
 async def create_submenu(data: SubMenuCreation, menu_id: int, service: SubMenuService = Depends()) -> SubMenu:
     result = service.create(data, menu_id)
     return result

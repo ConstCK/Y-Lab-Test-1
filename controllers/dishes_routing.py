@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 @router.get('/', description='Получение списка всех блюд')
-async def get_dishes(service: DishesService = Depends()) -> list[Dish] | dict:
+async def get_dishes(service: DishesService = Depends()) -> list[Dish] | list:
     result = service.get_all()
     return result
 
@@ -18,7 +18,7 @@ async def get_dish(dish_id: int, service: DishesService = Depends()) -> Dish:
     return result
 
 
-@router.post('/', description='Создание нового блюда')
+@router.post('/', description='Создание нового блюда', status_code=201)
 async def create_dish(data: DishCreation, submenu_id: int, service: DishesService = Depends()) -> Dish:
     result = service.create(data, submenu_id)
     return result

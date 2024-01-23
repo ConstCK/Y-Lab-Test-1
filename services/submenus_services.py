@@ -18,7 +18,7 @@ class SubMenuService:
             self.db.add(db_item)
             self.db.commit()
             self.db.refresh(db_item)
-            item = SubMenu(id=db_item.id, title=data.title, description=data.description,
+            item = SubMenu(id=str(db_item.id), title=data.title, description=data.description,
                            dishes_count=0)
             return item
 
@@ -28,22 +28,22 @@ class SubMenuService:
                 detail=f'Запись с таким именем уже существует'
             )
 
-    def get_all(self) -> list[SubMenu] | dict:
+    def get_all(self) -> list[SubMenu] | list:
         db_items = self.db.query(SubMenuTable).all()
         items_list = list()
         if db_items:
             for item in db_items:
-                result = SubMenu(id=item.id, title=item.title, description=item.description)
+                result = SubMenu(id=str(item.id), title=item.title, description=item.description)
                 result.dishes_count = len(item.dishes)
                 items_list.append(result)
-            return items_list
+        return items_list
 
-        return {'message': 'Нет записей в таблице подменю'}
+
 
     def get(self, submenu_id: int) -> SubMenu:
         db_item = self.db.query(SubMenuTable).filter(SubMenuTable.id == submenu_id).first()
         if db_item:
-            item = SubMenu(id=db_item.id, title=db_item.title, description=db_item.description)
+            item = SubMenu(id=str(db_item.id), title=db_item.title, description=db_item.description)
             item.dishes_count = len(db_item.dishes)
             return item
         raise HTTPException(
@@ -73,6 +73,6 @@ class SubMenuService:
         db_item.description = data.description
         self.db.commit()
         self.db.refresh(db_item)
-        item = SubMenu(id=db_item.id, title=data.title, description=data.description,)
+        item = SubMenu(id=str(db_item.id), title=data.title, description=data.description,)
         item.dishes_count = len(db_item.dishes)
         return item

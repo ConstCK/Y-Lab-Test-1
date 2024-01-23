@@ -20,7 +20,7 @@ class DishesService:
             self.db.commit()
             self.db.refresh(db_item)
             self.db.close()
-            item = Dish(id=db_item.id, title=data.title, description=data.description,
+            item = Dish(id=str(db_item.id), title=data.title, description=data.description,
                         price=data.price)
             return item
 
@@ -30,16 +30,21 @@ class DishesService:
                 detail=f'Запись с таким именем уже существует'
             )
 
-    def get_all(self) -> list[Type[Dish]] | dict:
-        items = self.db.query(DishTable).all()
-        if items:
-            return items
-        return {'message': 'Нет записей в таблице блюд'}
+    def get_all(self) -> list[Type[Dish]] | list:
+        db_items = self.db.query(DishTable).all()
+        items = list()
+
+        if db_items:
+            for item in db_items:
+                result = Dish(id=str(item.id), title=item.title,
+                              description=item.description, price=item.price)
+                items.append(result)
+        return items
 
     def get(self, dish_id: int) -> Dish:
         db_item = self.db.query(DishTable).filter(DishTable.id == dish_id).first()
         if db_item:
-            result = Dish(id=db_item.id, title=db_item.title,
+            result = Dish(id=str(db_item.id), title=db_item.title,
                           description=db_item.description, price=db_item.price)
             return result
         raise HTTPException(
@@ -70,6 +75,6 @@ class DishesService:
         db_item.price = data.price
         self.db.commit()
         self.db.refresh(db_item)
-        item = Dish(id=db_item.id, title=data.title, description=data.description,
+        item = Dish(id=str(db_item.id), title=data.title, description=data.description,
                     price=data.price)
         return item

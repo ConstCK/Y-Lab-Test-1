@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.get('/', description='Получение списка всех меню')
-async def get_menus(service: MenuService = Depends()) -> list[Menu] | dict:
+async def get_menus(service: MenuService = Depends()) -> list[Menu] | list:
     result = service.get_all()
     return result
 
@@ -21,7 +21,7 @@ async def get_menu(menu_id: int, service: MenuService = Depends()) -> Menu:
     return result
 
 
-@router.post('/', description='Создание нового меню')
+@router.post('/', description='Создание нового меню', status_code=201)
 async def create_menu(data: MenuCreation, service: MenuService = Depends()) -> Menu:
     result = service.create(data)
     return result

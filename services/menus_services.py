@@ -17,7 +17,7 @@ class MenuService:
             self.db.add(db_item)
             self.db.commit()
             self.db.refresh(db_item)
-            item = Menu(id=db_item.id, title=data.title, description=data.description,
+            item = Menu(id=str(db_item.id), title=data.title, description=data.description,
                         submenus_count=0, dishes_count=0)
             return item
         except IntegrityError:
@@ -26,24 +26,21 @@ class MenuService:
                 detail=f'Запись с таким именем уже существует'
             )
 
-
-    def get_all(self) -> list[Menu] | dict:
+    def get_all(self) -> list[Menu] | list:
         db_items = self.db.query(MenuTable).all()
         items_list = list()
         if db_items:
             for item in db_items:
-                result = Menu(id=item.id, title=item.title, description=item.description)
+                result = Menu(id=str(item.id), title=item.title, description=item.description)
                 result.submenus_count = len(item.submenus)
                 result.dishes_count = sum(len(s.dishes) for s in item.submenus)
                 items_list.append(result)
-                return items_list
-
-        return {'message': 'Нет записей в таблице меню'}
+        return items_list
 
     def get(self, menu_id: int) -> Menu:
         db_item = self.db.query(MenuTable).filter(MenuTable.id == menu_id).first()
         if db_item:
-            item = Menu(id=db_item.id, title=db_item.title, description=db_item.description)
+            item = Menu(id=str(db_item.id), title=db_item.title, description=db_item.description)
             item.submenus_count = len(db_item.submenus)
             item.dishes_count = sum(len(s.dishes) for s in db_item.submenus)
             return item
@@ -74,8 +71,7 @@ class MenuService:
         db_item.description = data.description
         self.db.commit()
         self.db.refresh(db_item)
-        item = Menu(id=db_item.id, title=data.title, description=data.description,)
+        item = Menu(id=str(db_item.id), title=data.title, description=data.description, )
         item.submenus_count = len(db_item.submenus)
         item.dishes_count = sum(len(s.dishes) for s in db_item.submenus)
         return item
-
