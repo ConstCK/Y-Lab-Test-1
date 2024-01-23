@@ -1,5 +1,6 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from database.database import get_db
 from models.models import SubMenu as SubMenuTable
@@ -7,8 +8,8 @@ from schemas.schemas import SubMenu, SubMenuCreation
 
 
 class SubMenuService:
-    def __init__(self):
-        self.db = next(get_db())
+    def __init__(self, session: Session = Depends(get_db)):
+        self.db = session
 
     def create(self, data: SubMenuCreation, menu_id: int) -> SubMenuTable:
         item = SubMenuTable(title=data.title, description=data.description, menu_id=menu_id)

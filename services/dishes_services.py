@@ -1,5 +1,8 @@
-from fastapi import HTTPException
+from typing import Type
+
+from fastapi import HTTPException, Depends
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from database.database import get_db
 from models.models import Dish as DishTable
@@ -7,8 +10,8 @@ from schemas.schemas import Dish, DishCreation
 
 
 class DishesService:
-    def __init__(self):
-        self.db = next(get_db())
+    def __init__(self, session: Session = Depends(get_db)):
+        self.db = session
 
     def create(self, data: DishCreation, submenu_id: int) -> DishTable:
         item = DishTable(title=data.title, description=data.description,
@@ -19,13 +22,13 @@ class DishesService:
             self.db.refresh(item)
             self.db.close()
             return item
-        except IntegrityError:
+        except AssertionError:
             raise HTTPException(
                 status_code=409,
                 detail=f'Запись с таким именем уже существует'
             )
 
-    def get_all(self) -> list[Dish] | dict:
+    def get_all(self) -> list[Type[Dish]] | dict:
         items = self.db.query(DishTable).all()
         if items:
             return items
