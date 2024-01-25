@@ -1,9 +1,12 @@
 from fastapi import HTTPException, Depends
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from database.database import get_db
 from models.models import Menu as MenuTable
+from models.models import SubMenu as SubMenuTable
+from models.models import Dish as DishTable
 from schemas.schemas import Menu, MenuCreation
 
 
@@ -31,9 +34,15 @@ class MenuService:
         items_list = list()
         if db_items:
             for item in db_items:
+                # submenu_counter = (self.db.query(SubMenuTable)
+                #                    .filter(SubMenuTable.menu_id == item.id).count())
+                # dishes_counter = (self.db.query(DishTable)
+                #                   .filter(DishTable.submenu_id.in_(item.submenus)).count())
                 result = Menu(id=str(item.id), title=item.title, description=item.description)
                 result.submenus_count = len(item.submenus)
                 result.dishes_count = sum(len(s.dishes) for s in item.submenus)
+                # result.submenus_count = submenu_counter
+                # result.dishes_count = dishes_counter
                 items_list.append(result)
         return items_list
 

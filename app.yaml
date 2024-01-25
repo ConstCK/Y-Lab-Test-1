@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  my_api:
+    build: .
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+    command: bash -c "python main.py"
+    depends_on:
+      - my_db
+
+  my_db:
+    image: postgres:15.1-alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: "${PASSWORD}"
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data/
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - '8888:8080'
+
+volumes:
+  db_data:
