@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
+# Для Docker настроек Server должен быть имя контейнера
 DATABASE_URL = f"postgresql://{os.getenv('USER')}:{os.getenv('PASSWORD')}\
 @{os.getenv('SERVER')}:5432/{os.getenv('DB')}"
 

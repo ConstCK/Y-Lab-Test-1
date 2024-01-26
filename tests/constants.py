@@ -4,10 +4,16 @@ load_dotenv()
 
 BASE_URL = f"http://{os.getenv('HOST')}:8000/api/v1"
 
-MY_MENU = {
+MY_MENU_1 = {
     'title': 'My menu 1',
     'description': 'My menu description 1'
 }
+
+MY_MENU_2 = {
+    'title': 'My menu 2',
+    'description': 'My menu description 2'
+}
+
 
 MY_SUBMENU = {
     'title': 'My submenu 1',
