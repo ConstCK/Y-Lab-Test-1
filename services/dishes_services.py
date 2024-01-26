@@ -1,6 +1,7 @@
 from typing import Type
 
 from fastapi import HTTPException, Depends
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from database.database import get_db
@@ -24,7 +25,7 @@ class DishesService:
                         price=data.price)
             return item
 
-        except AssertionError:
+        except IntegrityError:
             raise HTTPException(
                 status_code=409,
                 detail=f'Запись с таким именем уже существует'

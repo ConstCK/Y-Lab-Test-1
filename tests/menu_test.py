@@ -22,6 +22,8 @@ def test_create_menu():
     response = client.post(MENUS_URL, json=MY_MENU_1)
     assert response.status_code == 201
     assert 'id' in response.json()
+    assert response.json().get('submenus_count') == 0
+    assert response.json().get('dishes_count') == 0
     assert MY_MENU_1['title'] == response.json().get('title')
     assert MY_MENU_1['description'] == response.json().get('description')
 
@@ -56,7 +58,7 @@ def test_get_menu():
 
 
 def test_get_none_menu():
-    # Получение указанного меню
+    # Получение несуществующего меню
     response = client.get(f"{MENUS_URL}/0")
     assert response.status_code == 404
     assert response.json() == {"detail": "menu not found"}
@@ -64,6 +66,7 @@ def test_get_none_menu():
 
 # 7
 def test_update_menu():
+    # Обновление указанного меню
     response = client.patch(f"{MENUS_URL}/{MY_MENU_1.get('id')}",
                             json=MY_MENU_2)
     assert response.status_code == 200
@@ -76,6 +79,7 @@ def test_update_menu():
 
 # 8
 def test_update_none_menu():
+    # Обновление несуществующего меню
     response = client.patch(f"{MENUS_URL}/0",
                             json=MY_MENU_2)
     assert response.status_code == 404
@@ -84,11 +88,13 @@ def test_update_none_menu():
 
 # 9
 def test_delete_menu():
+    # Удаление указанного меню
     response = client.delete(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
     assert response.status_code == 200
     assert response.json() == {"status": True, "message": "The menu has been deleted"}
 
 
 def test_delete_none_menu():
+    # Удаление несуществующего меню
     response = client.delete(f"{MENUS_URL}/0")
     assert response.status_code == 404
