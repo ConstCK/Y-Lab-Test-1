@@ -135,7 +135,7 @@ def test_delete_none_dish():
 # 13
 def test_delete_submenu():
     # Удаление указанного подменю
-    response = client.delete(f"{SUBMENUS_URL}/{MY_MENU_1.get('id')}")
+    response = client.delete(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
     assert response.status_code == 200
     assert response.json() == {"status": True, "message": "The submenu has been deleted"}
 

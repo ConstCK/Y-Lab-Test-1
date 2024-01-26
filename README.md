@@ -46,9 +46,14 @@ http://localhost:8000/redoc
 
 Запуск тестов:
 
-Команда в терминале docker-compose --file tests.yaml up -d
+Команда в терминале docker-compose --file tests.yaml up 
 
 Остановка сервисов:
 docker-compose --file app.yaml down 
 docker-compose --file tests.yaml down
+
+с очисткой БД:
+docker-compose --file app.yaml down --volumes
+docker-compose --file tests.yaml down --volumes
+
 

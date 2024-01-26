@@ -63,7 +63,7 @@ def test_get_submenus():
 
 # 6
 def test_get_submenu():
-    # Получение указанного меню
+    # Получение указанного подменю
     response = client.get(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
     assert response.status_code == 200
     assert response.json().get('id') == MY_SUBMENU_1.get('id')
@@ -74,7 +74,7 @@ def test_get_submenu():
 
 # 7
 def test_get_none_submenu():
-    # Получение указанного меню
+    # Получение указанного подменю
     response = client.get(f"{SUBMENUS_URL}/0")
     assert response.status_code == 404
     assert response.json() == {"detail": "submenu not found"}
@@ -104,7 +104,7 @@ def test_update_none_submenu():
 # 10
 def test_delete_submenu():
     # Удаление указанного подменю
-    response = client.delete(f"{SUBMENUS_URL}/{MY_MENU_1.get('id')}")
+    response = client.delete(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
     assert response.status_code == 200
     assert response.json() == {"status": True, "message": "The submenu has been deleted"}
 
