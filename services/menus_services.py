@@ -36,7 +36,7 @@ class MenuService:
                     .select_from(MenuTable).outerjoin(SubMenuTable).outerjoin(DishTable).group_by(MenuTable.id).all())
         items_list = list()
 
-        if db_items:
+        if db_items[0]:
             for item in db_items:
                 result = Menu(id=str(item[0].id), title=item[0].title, description=item[0].description,
                               submenus_count=item.submenus_count, dishes_count=item.dishes_count)
