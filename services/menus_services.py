@@ -35,9 +35,9 @@ class MenuService:
                                   func.count(DishTable.id.distinct()).label('dishes_count'))
                     .select_from(MenuTable).outerjoin(SubMenuTable).outerjoin(DishTable).group_by(MenuTable.id).all())
         items_list = list()
-
-        if db_items[0]:
-            for item in db_items:
+        print(db_items)
+        for item in db_items:
+            if item[0]:
                 result = Menu(id=str(item[0].id), title=item[0].title, description=item[0].description,
                               submenus_count=item.submenus_count, dishes_count=item.dishes_count)
                 items_list.append(result)
@@ -50,7 +50,7 @@ class MenuService:
                    .select_from(MenuTable).filter(MenuTable.id == menu_id).outerjoin(SubMenuTable).outerjoin(
             DishTable).group_by(MenuTable.id).first())
 
-        if db_item[0]:
+        if db_item:
             item = Menu(id=str(db_item[0].id), title=db_item[0].title, description=db_item[0].description,
                         submenus_count=db_item.submenus_count, dishes_count=db_item.dishes_count)
 
@@ -79,7 +79,7 @@ class MenuService:
                    .select_from(MenuTable).filter(MenuTable.id == menu_id).outerjoin(SubMenuTable).outerjoin(
             DishTable).group_by(MenuTable.id).first())
 
-        if not db_item[0]:
+        if not db_item:
             raise HTTPException(
                 status_code=404,
                 detail='menu not found'

@@ -35,8 +35,8 @@ class SubMenuService:
                                   .label('dishes_count'))
                     .select_from(SubMenuTable).outerjoin(DishTable).group_by(SubMenuTable.id).all())
         items_list = list()
-        if db_items:
-            for item in db_items:
+        for item in db_items:
+            if item[0]:
                 result = SubMenu(id=str(item[0].id), title=item[0].title,
                                  description=item[0].description, dishes_count=item.dishes_count)
                 items_list.append(result)
@@ -72,7 +72,7 @@ class SubMenuService:
                                  func.count(DishTable.id.distinct()).label('dishes_count'))
                    .select_from(SubMenuTable).filter(SubMenuTable.id == submenu_id).outerjoin(
             DishTable).group_by(SubMenuTable.id).first())
-        if not db_item[0]:
+        if not db_item:
             raise HTTPException(
                 status_code=404,
                 detail=f'submenu not found'

@@ -56,6 +56,7 @@ def test_get_menu():
     assert 'submenus_count' in response.json()
     assert 'dishes_count' in response.json()
 
+
 # 6
 def test_get_none_menu():
     # Получение несуществующего меню
@@ -92,6 +93,7 @@ def test_delete_menu():
     response = client.delete(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
     assert response.status_code == 200
     assert response.json() == {"status": True, "message": "The menu has been deleted"}
+
 
 # 10
 def test_delete_none_menu():
