@@ -118,6 +118,17 @@ def test_update_none_dish():
 
 
 # 11
+def test_get_updated_dish():
+    # Получение обновленного блюда
+    response = client.get(f"{DISHES_URL}/{MY_DISH_1.get('id')}")
+    assert response.status_code == 200
+    assert response.json().get('id') == MY_DISH_1.get('id')
+    assert response.json().get('title') == MY_DISH_2.get('title')
+    assert response.json().get('description') == MY_DISH_2.get('description')
+    assert response.json().get('price') == MY_DISH_2.get('price')
+
+
+# 12
 def test_delete_dish():
     # Удаление указанного блюда
     response = client.delete(f"{DISHES_URL}/{MY_DISH_1.get('id')}")
@@ -125,14 +136,30 @@ def test_delete_dish():
     assert response.json() == {"status": True, "message": "The dish has been deleted"}
 
 
-# 12
+# 13
 def test_delete_none_dish():
     # Удаление несуществующего блюда
     response = client.delete(f"{DISHES_URL}/0")
     assert response.status_code == 404
 
 
-# 13
+# 14
+def test_final_get_dishes():
+    # Получение пустого списка блюд
+    response = client.get(DISHES_URL)
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+# 15
+def test_final_get_none_dish():
+    # Получение удаленного блюда
+    response = client.get(f"{DISHES_URL}/{MY_DISH_1.get('id')}")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "dish not found"}
+
+
+# 16
 def test_delete_submenu():
     # Удаление указанного подменю
     response = client.delete(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
@@ -140,9 +167,25 @@ def test_delete_submenu():
     assert response.json() == {"status": True, "message": "The submenu has been deleted"}
 
 
-# 14
+# 17
+def test_final_get_submenus():
+    # Получение пустого списка подменю
+    response = client.get(SUBMENUS_URL)
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+# 17
 def test_delete_menu():
     # Удаление указанного меню
     response = client.delete(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
     assert response.status_code == 200
     assert response.json() == {"status": True, "message": "The menu has been deleted"}
+
+
+# 18
+def test_final_get_menus():
+    # Получение пустого списка меню
+    response = client.get(MENUS_URL)
+    assert response.status_code == 200
+    assert response.json() == []

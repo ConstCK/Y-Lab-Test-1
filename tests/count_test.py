@@ -53,6 +53,7 @@ def test_create_first_dish():
 
     MY_DISH_1['id'] = response.json().get('id')
 
+
 # 4
 def test_create_second_dish():
     # Создание второго блюда
@@ -77,6 +78,7 @@ def test_get_menu():
     assert response.json().get('submenus_count') == 1
     assert response.json().get('dishes_count') == 2
 
+
 # 6
 def test_get_submenu():
     # Получение указанного подменю
@@ -87,3 +89,54 @@ def test_get_submenu():
     assert response.json().get('description') == MY_SUBMENU_1.get('description')
     assert response.json().get('dishes_count') == 2
 
+
+# 7
+def test_delete_submenu():
+    # Удаление указанного подменю
+    response = client.delete(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
+    assert response.status_code == 200
+    assert response.json() == {"status": True, "message": "The submenu has been deleted"}
+
+
+# 8
+def test_final_get_submenus():
+    # Получение пустого списка подменю
+    response = client.get(SUBMENUS_URL)
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+# 9
+def test_final_get_dishes():
+    # Получение пустого списка блюд
+    response = client.get(DISHES_URL)
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+# 10
+def test_final_get_menu():
+    # Получение указанного меню
+    response = client.get(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
+    assert response.status_code == 200
+    assert response.json().get('id') == MY_MENU_1.get('id')
+    assert response.json().get('title') == MY_MENU_1.get('title')
+    assert response.json().get('description') == MY_MENU_1.get('description')
+    assert response.json().get('submenus_count') == 0
+    assert response.json().get('dishes_count') == 0
+
+
+# 11
+def test_delete_menu():
+    # Удаление указанного меню
+    response = client.delete(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
+    assert response.status_code == 200
+    assert response.json() == {"status": True, "message": "The menu has been deleted"}
+
+
+# 12
+def test_final_get_menus():
+    # Получение пустого списка меню
+    response = client.get(MENUS_URL)
+    assert response.status_code == 200
+    assert response.json() == []

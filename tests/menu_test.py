@@ -89,7 +89,7 @@ def test_update_none_menu():
 
 # 9
 def test_get_updated_menu():
-    # Получение указанного меню
+    # Получение обновленного меню
     response = client.get(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
     assert response.status_code == 200
     assert response.json().get('id') == MY_MENU_1.get('id')
