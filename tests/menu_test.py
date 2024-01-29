@@ -88,6 +88,18 @@ def test_update_none_menu():
 
 
 # 9
+def test_get_updated_menu():
+    # Получение указанного меню
+    response = client.get(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
+    assert response.status_code == 200
+    assert response.json().get('id') == MY_MENU_1.get('id')
+    assert response.json().get('title') == MY_MENU_2.get('title')
+    assert response.json().get('description') == MY_MENU_2.get('description')
+    assert 'submenus_count' in response.json()
+    assert 'dishes_count' in response.json()
+
+
+# 10
 def test_delete_menu():
     # Удаление указанного меню
     response = client.delete(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
@@ -95,8 +107,24 @@ def test_delete_menu():
     assert response.json() == {"status": True, "message": "The menu has been deleted"}
 
 
-# 10
+# 11
 def test_delete_none_menu():
     # Удаление несуществующего меню
     response = client.delete(f"{MENUS_URL}/0")
     assert response.status_code == 404
+
+
+# 12
+def test_final_get_menus():
+    # Получение пустого списка меню
+    response = client.get(MENUS_URL)
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+# 13
+def test_final_get_none_menu():
+    # Получение уже удаленного меню
+    response = client.get(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "menu not found"}
