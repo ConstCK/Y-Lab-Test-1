@@ -14,7 +14,7 @@ class Menu(BaseMenu):
     dishes_count: int = 0
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class MenuCreation(BaseMenu):
@@ -31,7 +31,7 @@ class SubMenu(BaseSubMenu):
     dishes_count: int = 0
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SubMenuCreation(BaseSubMenu):
@@ -41,14 +41,14 @@ class SubMenuCreation(BaseSubMenu):
 class BaseDish(BaseModel):
     title: str
     description: str | None = None
-    price: Decimal = Field(decimal_places=2, gt=0)
+    price: Decimal = Field(gt=0)
 
 
 class Dish(BaseDish):
     id: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class DishCreation(BaseDish):

@@ -1,86 +1,26 @@
-from fastapi import HTTPException, Depends
-from sqlalchemy import func
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from typing import Any
 
-from database.database import get_db
-from models.models import Dish as DishTable
-from models.models import SubMenu as SubMenuTable
+from fastapi import Depends
+
+from repositories.submenus_repository import SubMenuRepository
 from schemas.schemas import SubMenu, SubMenuCreation
 
 
 class SubMenuService:
-    def __init__(self, session: Session = Depends(get_db)):
-        self.db = session
+    def __init__(self, repository: SubMenuRepository = Depends()):
+        self.repository = repository
 
-    def create(self, data: SubMenuCreation, menu_id: int) -> SubMenu:
-        db_item = SubMenuTable(title=data.title, description=data.description, menu_id=menu_id)
+    async def create(self, data: SubMenuCreation, menu_id: int) -> SubMenu | Any:
+        return await self.repository.create(data, menu_id)
 
-        try:
-            self.db.add(db_item)
-            self.db.commit()
-            self.db.refresh(db_item)
-            item = SubMenu(id=str(db_item.id), title=data.title, description=data.description,
-                           dishes_count=0)
-            return item
+    async def get_all(self) -> list[SubMenu] | list | Any:
+        return await self.repository.get_all()
 
-        except IntegrityError:
-            raise HTTPException(
-                status_code=409,
-                detail=f'Запись с таким именем уже существует'
-            )
+    async def get(self, menu_id: int) -> SubMenu:
+        return await self.repository.get(menu_id)
 
-    def get_all(self) -> list[SubMenu] | list:
-        db_items = (self.db.query(SubMenuTable, func.count(DishTable.id.distinct())
-                                  .label('dishes_count'))
-                    .select_from(SubMenuTable).outerjoin(DishTable).group_by(SubMenuTable.id).all())
-        items_list = list()
-        for item in db_items:
-            if item[0]:
-                result = SubMenu(id=str(item[0].id), title=item[0].title,
-                                 description=item[0].description, dishes_count=item.dishes_count)
-                items_list.append(result)
-        return items_list
+    def delete(self, menu_id: int) -> dict:
+        return self.repository.delete(menu_id)
 
-    def get(self, submenu_id: int) -> SubMenu:
-        db_item = (self.db.query(SubMenuTable,
-                                 func.count(DishTable.id.distinct()).label('dishes_count'))
-                   .select_from(SubMenuTable).filter(SubMenuTable.id == submenu_id).outerjoin(
-            DishTable).group_by(SubMenuTable.id).first())
-        if db_item:
-            item = SubMenu(id=str(db_item[0].id), title=db_item[0].title,
-                           description=db_item[0].description, dishes_count=db_item.dishes_count)
-            return item
-        raise HTTPException(
-            status_code=404,
-            detail='submenu not found'
-        )
-
-    def delete(self, submenu_id: int) -> dict:
-        db_item = self.db.query(SubMenuTable).filter(SubMenuTable.id == submenu_id).first()
-        if not db_item:
-            raise HTTPException(
-                status_code=404,
-                detail=f'Записи с id = {submenu_id} не существует'
-            )
-        self.db.delete(db_item)
-        self.db.commit()
-        return {'status': True, 'message': 'The submenu has been deleted'}
-
-    def update(self, submenu_id: int, data: SubMenuCreation) -> SubMenu:
-        db_item = (self.db.query(SubMenuTable,
-                                 func.count(DishTable.id.distinct()).label('dishes_count'))
-                   .select_from(SubMenuTable).filter(SubMenuTable.id == submenu_id).outerjoin(
-            DishTable).group_by(SubMenuTable.id).first())
-        if not db_item:
-            raise HTTPException(
-                status_code=404,
-                detail=f'submenu not found'
-            )
-        db_item[0].title = data.title
-        db_item[0].description = data.description
-        item = SubMenu(id=str(db_item[0].id), title=data.title,
-                       description=data.description, dishes_count=db_item.dishes_count)
-        self.db.commit()
-        self.db.refresh(db_item[0])
-        return item
+    async def update(self, menu_id: int, data: SubMenuCreation) -> SubMenu:
+        return await self.repository.update(menu_id, data)
