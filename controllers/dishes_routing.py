@@ -32,5 +32,5 @@ async def update_dish(dish_id: int, data: DishCreation, service: DishesService =
 
 @router.delete('/{dish_id}', description='Удаление выбранного блюда')
 async def delete_dish(dish_id: int, service: DishesService = Depends()) -> dict:
-    result = service.delete(dish_id)
+    result = await service.delete(dish_id)
     return result

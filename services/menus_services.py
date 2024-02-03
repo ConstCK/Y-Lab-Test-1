@@ -21,8 +21,8 @@ class MenuService:
     async def get(self, menu_id: int) -> Menu:
         return await self.repository.get(menu_id)
 
-    def delete(self, menu_id: int) -> dict:
-        return self.repository.delete(menu_id)
+    async def delete(self, menu_id: int) -> dict:
+        return await self.repository.delete(menu_id)
 
     async def update(self, menu_id: int, data: MenuCreation) -> Menu:
         return await self.repository.update(menu_id, data)

@@ -27,7 +27,6 @@ class MenuRepository:
             self.db.refresh(db_item)
             item = Menu(id=str(db_item.id), title=data.title, description=data.description,
                         submenus_count=0, dishes_count=0)
-            await self.cache.set_item(db_item.id, json.dumps(dict(item)), 60)
             return item
         except IntegrityError:
             raise HTTPException(
@@ -36,7 +35,7 @@ class MenuRepository:
             )
 
     async def get_all(self) -> list[Menu] | list:
-        all_cache = await self.cache.get_items(f'{self.name}-all')
+        all_cache = await self.cache.get_items()
         if all_cache:
             print('cache data...')
             return all_cache
@@ -56,9 +55,10 @@ class MenuRepository:
         return items_list
 
     async def get(self, menu_id: int) -> Menu:
-        cache_one = await self.cache.get_item(f'{self.name}-{menu_id}')
+        cache_one = await self.cache.get_item(menu_id)
         if cache_one:
             print('cache data...')
+            print(Menu(**json.loads(cache_one)))
             return Menu(**json.loads(cache_one))
 
         db_item = (self.db.query(MenuTable,
@@ -78,7 +78,7 @@ class MenuRepository:
             detail='menu not found'
         )
 
-    def delete(self, menu_id: int) -> dict:
+    async def delete(self, menu_id: int) -> dict:
         db_item = self.db.query(MenuTable).filter(MenuTable.id == menu_id).first()
         if not db_item:
             raise HTTPException(
@@ -87,6 +87,8 @@ class MenuRepository:
             )
         self.db.delete(db_item)
         self.db.commit()
+        await self.cache.remove_item(menu_id)
+        await self.cache.remove_item('all')
         return {'status': True, 'message': 'The menu has been deleted'}
 
     async def update(self, menu_id: int, data: MenuCreation) -> Menu:

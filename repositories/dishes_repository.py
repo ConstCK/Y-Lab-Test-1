@@ -28,7 +28,6 @@ class DishesRepository:
             self.db.close()
             item = Dish(id=str(db_item.id), title=data.title, description=data.description,
                         price=round(data.price, 2))
-            await self.cache.set_item(db_item.id, json.dumps(dict(item), default=str), 60)
             return item
 
         except IntegrityError:
@@ -38,7 +37,7 @@ class DishesRepository:
             )
 
     async def get_all(self) -> list[Type[Dish]] | list:
-        all_cache = await self.cache.get_items(f'{self.name}-all')
+        all_cache = await self.cache.get_items()
         if all_cache:
             print('cache data...')
             return all_cache
@@ -56,7 +55,7 @@ class DishesRepository:
         return items
 
     async def get(self, dish_id: int) -> Dish:
-        one_cache = await self.cache.get_item(f'{self.name}-{dish_id}')
+        one_cache = await self.cache.get_item(dish_id)
         if one_cache:
             print('cache data...')
             return Dish(**json.loads(one_cache))
@@ -65,7 +64,7 @@ class DishesRepository:
         if db_item:
             item = Dish(id=str(db_item.id), title=db_item.title,
                         description=db_item.description, price=round(db_item.price, 2))
-            await self.cache.set_item(db_item[0].id, json.dumps(dict(item), default=str), 60)
+            await self.cache.set_item(db_item.id, json.dumps(dict(item), default=str), 60)
             return item
 
         raise HTTPException(
@@ -73,15 +72,18 @@ class DishesRepository:
             detail='dish not found'
         )
 
-    def delete(self, dish_id: int) -> dict:
-        item = self.db.query(DishTable).filter(DishTable.id == dish_id).first()
-        if not item:
+    async def delete(self, dish_id: int) -> dict:
+        db_item = self.db.query(DishTable).filter(DishTable.id == dish_id).first()
+        if not db_item:
             raise HTTPException(
                 status_code=404,
                 detail=f'Записи с id = {dish_id} не существует'
             )
-        self.db.delete(item)
+        self.db.delete(db_item)
         self.db.commit()
+        await self.cache.remove_item(dish_id)
+        await self.cache.remove_item('all')
+        await self.cache.remove_parent(f'submenu-{db_item.submenu_id}')
         return {'status': True, 'message': 'The dish has been deleted'}
 
     async def update(self, submenu_id: int, data: DishCreation) -> Dish:

@@ -26,7 +26,7 @@ async def create_submenu(data: SubMenuCreation, menu_id: int, service: SubMenuSe
 
 @router.delete('/{submenu_id}', description='Удаление выбранного подменю')
 async def delete_submenu(submenu_id: int, service: SubMenuService = Depends()) -> dict:
-    result = service.delete(submenu_id)
+    result = await service.delete(submenu_id)
     return result
 
 

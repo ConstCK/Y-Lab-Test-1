@@ -1,5 +1,7 @@
+import pytest
 from fastapi.testclient import TestClient
 
+from database.database import Base, engine
 from main import app
 from .constants import BASE_URL, MY_MENU_1, MY_SUBMENU_1, MY_DISH_1, MY_DISH_2
 
@@ -8,6 +10,11 @@ client = TestClient(app)
 MENUS_URL = f"{BASE_URL}/menus"
 SUBMENUS_URL = ""
 DISHES_URL = ""
+
+
+@pytest.fixture(autouse=True)
+def test_clear_db():
+    Base.metadata.create_all(bind=engine)
 
 
 # 1

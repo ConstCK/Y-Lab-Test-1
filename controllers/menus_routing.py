@@ -27,7 +27,7 @@ async def create_menu(data: MenuCreation, service: MenuService = Depends()) -> M
 @router.delete('/{menu_id}', description='Удаление выбранного меню')
 async def delete_menu(menu_id: int, service: MenuService = Depends()) -> dict:
     result = service.delete(menu_id)
-    return result
+    return await result
 
 
 @router.patch('/{menu_id}', description='Изменение выбранного меню', response_model=Menu)

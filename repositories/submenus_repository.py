@@ -28,7 +28,6 @@ class SubMenuRepository:
             self.db.refresh(db_item)
             item = SubMenu(id=str(db_item.id), title=data.title, description=data.description,
                            dishes_count=0)
-            await self.cache.set_item(db_item.id, json.dumps(dict(item)), 60)
             return item
 
         except IntegrityError:
@@ -38,7 +37,7 @@ class SubMenuRepository:
             )
 
     async def get_all(self) -> list[SubMenu] | list | Any:
-        all_cache = await self.cache.get_items(f'{self.name}-all')
+        all_cache = await self.cache.get_items()
         if all_cache:
             print('cache data...')
             return all_cache
@@ -58,7 +57,7 @@ class SubMenuRepository:
         return items_list
 
     async def get(self, submenu_id: int) -> SubMenu:
-        one_cache = await self.cache.get_item(f'{self.name}-{submenu_id}')
+        one_cache = await self.cache.get_item(submenu_id)
         if one_cache:
             print('cache data...')
             return SubMenu(**json.loads(one_cache))
@@ -78,7 +77,7 @@ class SubMenuRepository:
             detail='submenu not found'
         )
 
-    def delete(self, submenu_id: int) -> dict:
+    async def delete(self, submenu_id: int) -> dict:
         db_item = self.db.query(SubMenuTable).filter(SubMenuTable.id == submenu_id).first()
         if not db_item:
             raise HTTPException(
@@ -87,6 +86,9 @@ class SubMenuRepository:
             )
         self.db.delete(db_item)
         self.db.commit()
+        await self.cache.remove_item(submenu_id)
+        await self.cache.remove_item('all')
+        await self.cache.remove_parent(f'menu-{db_item.menu_id}')
         return {'status': True, 'message': 'The submenu has been deleted'}
 
     async def update(self, submenu_id: int, data: SubMenuCreation) -> SubMenu:
