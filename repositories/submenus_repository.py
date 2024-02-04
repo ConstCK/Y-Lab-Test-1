@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-from fastapi import HTTPException, Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -33,7 +33,7 @@ class SubMenuRepository:
         except IntegrityError:
             raise HTTPException(
                 status_code=409,
-                detail=f'Запись с таким именем уже существует'
+                detail='Запись с таким именем уже существует'
             )
 
     async def get_all(self) -> list[SubMenu] | list | Any:
@@ -99,7 +99,7 @@ class SubMenuRepository:
         if not db_item:
             raise HTTPException(
                 status_code=404,
-                detail=f'submenu not found'
+                detail='submenu not found'
             )
         db_item[0].title = data.title
         db_item[0].description = data.description

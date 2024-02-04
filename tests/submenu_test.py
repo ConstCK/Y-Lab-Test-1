@@ -3,12 +3,13 @@ from fastapi.testclient import TestClient
 
 from database.database import Base, engine
 from main import app
+
 from .constants import BASE_URL, MY_MENU_1, MY_SUBMENU_1, MY_SUBMENU_2
 
 client = TestClient(app)
 
 MENUS_URL = f"{BASE_URL}/menus"
-SUBMENUS_URL = ""
+SUBMENUS_URL = ''
 
 
 @pytest.fixture(autouse=True)
@@ -84,7 +85,7 @@ def test_get_none_submenu():
     # Получение указанного подменю
     response = client.get(f"{SUBMENUS_URL}/0")
     assert response.status_code == 404
-    assert response.json() == {"detail": "submenu not found"}
+    assert response.json() == {'detail': 'submenu not found'}
 
 
 # 8
@@ -105,7 +106,7 @@ def test_update_none_submenu():
     response = client.patch(f"{SUBMENUS_URL}/0",
                             json=MY_SUBMENU_2)
     assert response.status_code == 404
-    assert response.json() == {"detail": "submenu not found"}
+    assert response.json() == {'detail': 'submenu not found'}
 
 
 # 10
@@ -124,7 +125,7 @@ def test_delete_submenu():
     # Удаление указанного подменю
     response = client.delete(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
     assert response.status_code == 200
-    assert response.json() == {"status": True, "message": "The submenu has been deleted"}
+    assert response.json() == {'status': True, 'message': 'The submenu has been deleted'}
 
 
 # 12
@@ -147,7 +148,7 @@ def test_final_get_none_submenu():
     # Получение указанного подменю
     response = client.get(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
     assert response.status_code == 404
-    assert response.json() == {"detail": "submenu not found"}
+    assert response.json() == {'detail': 'submenu not found'}
 
 
 # 15
@@ -155,7 +156,7 @@ def test_delete_menu():
     # Удаление указанного меню
     response = client.delete(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
     assert response.status_code == 200
-    assert response.json() == {"status": True, "message": "The menu has been deleted"}
+    assert response.json() == {'status': True, 'message': 'The menu has been deleted'}
 
 
 # 16

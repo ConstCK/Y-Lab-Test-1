@@ -1,7 +1,7 @@
 from fastapi import Depends
 
 from repositories.dishes_repository import DishesRepository
-from schemas.schemas import DishCreation, Dish
+from schemas.schemas import Dish, DishCreation
 
 
 class DishesService:

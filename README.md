@@ -3,7 +3,7 @@
 * Скопируйте проект к себе на ПК при помощи: git clone https://github.com/ConstCK/Y-Lab-Test-1.git
 * Перейдите в папку проекта
 * В терминале создайте виртуальное окружение (например python -m venv venv) и активируйте его (venv\scripts\activate)
-* Установите все зависимости при помощи pip install -r requirements.txt 
+* Установите все зависимости при помощи pip install -r requirements.txt
 * Создайте файл .env в каталоге проекта и пропишите в нем настройки БД по примеру .env.example
 
 _**Убедитесь, что Docker (Docker Desktop) установлен и запущен на вашем ПК!!!**_
@@ -34,16 +34,14 @@ http://localhost:8888/
 
 ## Запуск тестов:
 
-Команда в терминале docker-compose --file tests.yaml up 
+Команда в терминале docker-compose --file tests.yaml up
 
 ## Остановка сервисов:
 
-docker-compose --file app.yaml down 
+docker-compose --file app.yaml down
 docker-compose --file tests.yaml down
 
 ## Остановка сервисов с очисткой БД:
 
 docker-compose --file app.yaml down --volumes
 docker-compose --file tests.yaml down --volumes
-
-

@@ -1,6 +1,6 @@
 import json
 
-from fastapi import HTTPException, Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -31,7 +31,7 @@ class MenuRepository:
         except IntegrityError:
             raise HTTPException(
                 status_code=409,
-                detail=f'Запись с таким именем уже существует'
+                detail='Запись с таким именем уже существует'
             )
 
     async def get_all(self) -> list[Menu] | list:

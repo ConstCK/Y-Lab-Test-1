@@ -1,8 +1,9 @@
 import pytest
-
 from fastapi.testclient import TestClient
+
 from database.database import Base, engine
 from main import app
+
 from .constants import BASE_URL, MY_MENU_1, MY_MENU_2
 
 client = TestClient(app)
@@ -69,7 +70,7 @@ def test_get_none_menu():
     # Получение несуществующего меню
     response = client.get(f"{MENUS_URL}/0")
     assert response.status_code == 404
-    assert response.json() == {"detail": "menu not found"}
+    assert response.json() == {'detail': 'menu not found'}
 
 
 # 7
@@ -91,7 +92,7 @@ def test_update_none_menu():
     response = client.patch(f"{MENUS_URL}/0",
                             json=MY_MENU_2)
     assert response.status_code == 404
-    assert response.json() == {"detail": "menu not found"}
+    assert response.json() == {'detail': 'menu not found'}
 
 
 # 9
@@ -111,7 +112,7 @@ def test_delete_menu():
     # Удаление указанного меню
     response = client.delete(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
     assert response.status_code == 200
-    assert response.json() == {"status": True, "message": "The menu has been deleted"}
+    assert response.json() == {'status': True, 'message': 'The menu has been deleted'}
 
 
 # 11
@@ -134,4 +135,4 @@ def test_final_get_none_menu():
     # Получение уже удаленного меню
     response = client.get(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
     assert response.status_code == 404
-    assert response.json() == {"detail": "menu not found"}
+    assert response.json() == {'detail': 'menu not found'}

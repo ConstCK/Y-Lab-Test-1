@@ -11,7 +11,7 @@ services:
       CACHE: "redis://redis:6379/0"
     command: bash -c "python -m pytest tests/menu_test.py &&
       python -m pytest tests/submenu_test.py &&
-      python -m pytest tests/dish_test.py &&      
+      python -m pytest tests/dish_test.py &&
       python -m pytest tests/count_test.py"
     depends_on:
       my_db:

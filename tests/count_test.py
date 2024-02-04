@@ -3,13 +3,14 @@ from fastapi.testclient import TestClient
 
 from database.database import Base, engine
 from main import app
-from .constants import BASE_URL, MY_MENU_1, MY_SUBMENU_1, MY_DISH_1, MY_DISH_2
+
+from .constants import BASE_URL, MY_DISH_1, MY_DISH_2, MY_MENU_1, MY_SUBMENU_1
 
 client = TestClient(app)
 
 MENUS_URL = f"{BASE_URL}/menus"
-SUBMENUS_URL = ""
-DISHES_URL = ""
+SUBMENUS_URL = ''
+DISHES_URL = ''
 
 
 @pytest.fixture(autouse=True)
@@ -102,7 +103,7 @@ def test_delete_submenu():
     # Удаление указанного подменю
     response = client.delete(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
     assert response.status_code == 200
-    assert response.json() == {"status": True, "message": "The submenu has been deleted"}
+    assert response.json() == {'status': True, 'message': 'The submenu has been deleted'}
 
 
 # 8
@@ -138,7 +139,7 @@ def test_delete_menu():
     # Удаление указанного меню
     response = client.delete(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
     assert response.status_code == 200
-    assert response.json() == {"status": True, "message": "The menu has been deleted"}
+    assert response.json() == {'status': True, 'message': 'The menu has been deleted'}
 
 
 # 12

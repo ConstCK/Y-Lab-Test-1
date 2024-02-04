@@ -1,8 +1,6 @@
 import json
-from typing import Type
 
-import simplejson
-from fastapi import HTTPException, Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -33,10 +31,10 @@ class DishesRepository:
         except IntegrityError:
             raise HTTPException(
                 status_code=409,
-                detail=f'Запись с таким именем уже существует'
+                detail='Запись с таким именем уже существует'
             )
 
-    async def get_all(self) -> list[Type[Dish]] | list:
+    async def get_all(self) -> list[type[Dish]] | list:
         all_cache = await self.cache.get_items()
         if all_cache:
             print('cache data...')

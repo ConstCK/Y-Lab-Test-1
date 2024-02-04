@@ -8,8 +8,6 @@ services:
     expose:
       - 8000
     command: bash -c "python main.py"
-    environment:
-      CACHE: "redis://redis:6379/0"
     depends_on:
       my_db:
         condition: service_healthy

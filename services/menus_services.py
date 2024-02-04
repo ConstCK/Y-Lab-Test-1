@@ -1,9 +1,5 @@
-from fastapi import HTTPException, Depends
-from sqlalchemy import func
+from fastapi import Depends
 
-from models.models import Dish as DishTable
-from models.models import Menu as MenuTable
-from models.models import SubMenu as SubMenuTable
 from repositories.menus_repository import MenuRepository
 from schemas.schemas import Menu, MenuCreation
 
