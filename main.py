@@ -27,6 +27,8 @@ tags_metadata = [
 ]
 
 app = FastAPI(
+    title='Restaurant API',
+    description='Api для ресторана',
     openapi_tags=tags_metadata
 )
 
