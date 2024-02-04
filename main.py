@@ -12,13 +12,23 @@ from database.database import Base, engine
 load_dotenv()
 tags_metadata = [
     {
-        'name': 'users',
-        'description': 'Operations with users. The **login** logic is also here.',
+        'name': 'menus',
+        'description': 'Операции с меню. Получение, добавление, изменение и удаление меню',
+    },
+    {
+        'name': 'submenus',
+        'description': 'Операции с подменю. Получение, добавление, изменение и удаление подменю',
+    },
+    {
+        'name': 'dishes',
+        'description': 'Операции с блюдами. Получение, добавление, изменение и удаление блюд',
     },
 
 ]
 
-app = FastAPI()
+app = FastAPI(
+    openapi_tags=tags_metadata
+)
 
 
 @app.get('/', description='Приветственная надпись', )
