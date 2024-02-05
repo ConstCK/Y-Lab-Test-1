@@ -7,14 +7,14 @@ router = APIRouter()
 
 
 @router.get('/', description='Получение списка всех подменю', response_model=list[SubMenu],
-            status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK, name='submenus_url')
 async def get_submenus(service: SubMenuService = Depends()) -> list[SubMenu] | list:
     result = await service.get_all()
     return result
 
 
 @router.get('/{submenu_id}', description='Получение выбранного подменю', response_model=SubMenu,
-            status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK, name='submenu_url')
 async def get_submenu(submenu_id: int, service: SubMenuService = Depends()) -> SubMenu:
     result = await service.get(submenu_id)
     return result

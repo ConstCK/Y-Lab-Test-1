@@ -1,7 +1,5 @@
-import pytest
 from fastapi.testclient import TestClient
 
-from database.database import Base, engine
 from main import app
 
 from .constants import BASE_URL, MY_DISH_1, MY_DISH_2, MY_MENU_1, MY_SUBMENU_1
@@ -11,17 +9,16 @@ client = TestClient(app)
 MENUS_URL = f"{BASE_URL}/menus"
 SUBMENUS_URL = ''
 DISHES_URL = ''
-
-
-@pytest.fixture(autouse=True)
-def test_clear_db():
-    Base.metadata.create_all(bind=engine)
+MENU_ID = None
+SUBMENU_ID = None
+DISH_1_ID = None
+DISH_2_ID = None
 
 
 # 1
 def test_create_menu():
     # Создание нового меню
-    response = client.post(MENUS_URL, json=MY_MENU_1)
+    response = client.post(app.url_path_for('menus_url'), json=MY_MENU_1)
     assert response.status_code == 201
     assert 'id' in response.json()
     assert response.json().get('submenus_count') == 0
@@ -29,30 +26,29 @@ def test_create_menu():
     assert MY_MENU_1['title'] == response.json().get('title')
     assert MY_MENU_1['description'] == response.json().get('description')
 
-    global SUBMENUS_URL
-    MY_MENU_1['id'] = response.json().get('id')
-    SUBMENUS_URL = f"{BASE_URL}/menus/{MY_MENU_1.get('id')}/submenus"
+    global MENU_ID
+    MENU_ID = response.json().get('id')
 
 
 # 2
 def test_create_submenu():
     # Создание нового подменю
-    response = client.post(SUBMENUS_URL, json=MY_SUBMENU_1)
+    response = client.post(app.url_path_for('submenus_url', menu_id=MENU_ID), json=MY_SUBMENU_1)
     assert response.status_code == 201
     assert 'id' in response.json()
     assert response.json().get('dishes_count') == 0
     assert MY_SUBMENU_1['title'] == response.json().get('title')
     assert MY_SUBMENU_1['description'] == response.json().get('description')
 
-    global DISHES_URL
-    MY_SUBMENU_1['id'] = response.json().get('id')
-    DISHES_URL = f"{BASE_URL}/menus/{MY_MENU_1.get('id')}/submenus/{MY_SUBMENU_1.get('id')}/dishes"
+    global SUBMENU_ID
+    SUBMENU_ID = response.json().get('id')
 
 
 # 3
 def test_create_first_dish():
     # Создание первого блюда
-    response = client.post(DISHES_URL, json=MY_DISH_1)
+    response = client.post(app.url_path_for('dishes_url', menu_id=MENU_ID,
+                                            submenu_id=SUBMENU_ID), json=MY_DISH_1)
     assert response.status_code == 201
     assert 'id' in response.json()
     assert MY_DISH_1['title'] == response.json().get('title')
@@ -65,22 +61,24 @@ def test_create_first_dish():
 # 4
 def test_create_second_dish():
     # Создание второго блюда
-    response = client.post(DISHES_URL, json=MY_DISH_2)
+    response = client.post(app.url_path_for('dishes_url', menu_id=MENU_ID,
+                                            submenu_id=SUBMENU_ID), json=MY_DISH_2)
     assert response.status_code == 201
     assert 'id' in response.json()
     assert MY_DISH_2['title'] == response.json().get('title')
     assert MY_DISH_2['description'] == response.json().get('description')
     assert MY_DISH_2['price'] == response.json().get('price')
 
-    MY_DISH_2['id'] = response.json().get('id')
+    global DISH_2_ID
+    DISH_2_ID = response.json().get('id')
 
 
 # 5
 def test_get_menu():
     # Получение указанного меню
-    response = client.get(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
+    response = client.get(app.url_path_for('menu_url', menu_id=MENU_ID))
     assert response.status_code == 200
-    assert response.json().get('id') == MY_MENU_1.get('id')
+    assert response.json().get('id') == MENU_ID
     assert response.json().get('title') == MY_MENU_1.get('title')
     assert response.json().get('description') == MY_MENU_1.get('description')
     assert response.json().get('submenus_count') == 1
@@ -90,9 +88,9 @@ def test_get_menu():
 # 6
 def test_get_submenu():
     # Получение указанного подменю
-    response = client.get(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
+    response = client.get(app.url_path_for('submenu_url', menu_id=MENU_ID, submenu_id=SUBMENU_ID))
     assert response.status_code == 200
-    assert response.json().get('id') == MY_SUBMENU_1.get('id')
+    assert response.json().get('id') == SUBMENU_ID
     assert response.json().get('title') == MY_SUBMENU_1.get('title')
     assert response.json().get('description') == MY_SUBMENU_1.get('description')
     assert response.json().get('dishes_count') == 2
@@ -101,7 +99,7 @@ def test_get_submenu():
 # 7
 def test_delete_submenu():
     # Удаление указанного подменю
-    response = client.delete(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
+    response = client.delete(app.url_path_for('submenu_url', menu_id=MENU_ID, submenu_id=SUBMENU_ID))
     assert response.status_code == 200
     assert response.json() == {'status': True, 'message': 'The submenu has been deleted'}
 
@@ -109,7 +107,7 @@ def test_delete_submenu():
 # 8
 def test_final_get_submenus():
     # Получение пустого списка подменю
-    response = client.get(SUBMENUS_URL)
+    response = client.get(app.url_path_for('submenus_url', menu_id=MENU_ID))
     assert response.status_code == 200
     assert response.json() == []
 
@@ -117,7 +115,7 @@ def test_final_get_submenus():
 # 9
 def test_final_get_dishes():
     # Получение пустого списка блюд
-    response = client.get(DISHES_URL)
+    response = client.get(app.url_path_for('dishes_url', menu_id=MENU_ID, submenu_id=SUBMENU_ID))
     assert response.status_code == 200
     assert response.json() == []
 
@@ -125,9 +123,9 @@ def test_final_get_dishes():
 # 10
 def test_final_get_menu():
     # Получение указанного меню
-    response = client.get(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
+    response = client.get(app.url_path_for('menu_url', menu_id=MENU_ID))
     assert response.status_code == 200
-    assert response.json().get('id') == MY_MENU_1.get('id')
+    assert response.json().get('id') == MENU_ID
     assert response.json().get('title') == MY_MENU_1.get('title')
     assert response.json().get('description') == MY_MENU_1.get('description')
     assert response.json().get('submenus_count') == 0
@@ -137,7 +135,7 @@ def test_final_get_menu():
 # 11
 def test_delete_menu():
     # Удаление указанного меню
-    response = client.delete(f"{MENUS_URL}/{MY_MENU_1.get('id')}")
+    response = client.delete(app.url_path_for('menu_url', menu_id=MENU_ID))
     assert response.status_code == 200
     assert response.json() == {'status': True, 'message': 'The menu has been deleted'}
 
@@ -145,6 +143,6 @@ def test_delete_menu():
 # 12
 def test_final_get_menus():
     # Получение пустого списка меню
-    response = client.get(MENUS_URL)
+    response = client.get(app.url_path_for('menus_url'))
     assert response.status_code == 200
     assert response.json() == []

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BASE_URL = f"http: //{os.getenv('HOST')}:8000/api/v1"
+BASE_URL = f"http://{os.getenv('HOST')}:8000/api/v1"  # noqa: E231
 
 MY_MENU_1 = {
     'title': 'My menu 1',

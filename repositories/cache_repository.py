@@ -1,13 +1,13 @@
 import json
+import os
 
-from redis import asyncio as aioredis
+from redis import asyncio as aioredis  # type: ignore
 
 
 class CacheRepository:
     def __init__(self, name) -> None:
-        self.red = aioredis.from_url('redis://redis:6379/0',
-                                     encoding='utf8',
-                                     decode_responses=True)
+        self.red = aioredis.from_url(f"redis://{os.getenv('REDIS')}:6379/0", encoding='utf8',  # noqa: E231
+                                     decode_responses=True)  # noqa: E231
         self.name = name
 
     async def set_item(self, key_id: int, item: str, expire_time: int = 60) -> None:

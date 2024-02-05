@@ -7,14 +7,14 @@ router = APIRouter()
 
 
 @router.get('/', description='Получение списка всех блюд', response_model=list[Dish],
-            status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK, name='dishes_url')
 async def get_dishes(service: DishesService = Depends()) -> list[Dish] | list:
     result = await service.get_all()
     return result
 
 
 @router.get('/{dish_id}', description='Получение выбранного блюда', response_model=Dish,
-            status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK, name='dish_url')
 async def get_dish(dish_id: int, service: DishesService = Depends()) -> Dish:
     result = await service.get(dish_id)
     return result
