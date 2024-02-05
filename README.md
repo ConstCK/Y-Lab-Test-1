@@ -45,3 +45,7 @@ docker-compose --file tests.yaml down
 
 docker-compose --file app.yaml down --volumes
 docker-compose --file tests.yaml down --volumes
+
+## Примечания:
+
+Маршруты в тестах приведены к виду (reverse route for url name)

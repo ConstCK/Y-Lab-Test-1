@@ -35,7 +35,7 @@ class MenuRepository:
             )
 
     async def get_all(self) -> list[Menu] | list:
-        all_cache = await self.cache.get_items()
+        all_cache = await self.cache.get_items(f"{self.name}-all")
         if all_cache:
             print('cache data...')
             return all_cache
@@ -50,12 +50,12 @@ class MenuRepository:
                 result = Menu(id=str(item[0].id), title=item[0].title, description=item[0].description,
                               submenus_count=item.submenus_count, dishes_count=item.dishes_count)
                 items_list.append(result)
-                await self.cache.set_items(json.dumps(dict(result)))
+                await self.cache.set_items(f"{self.name}-all", json.dumps(dict(result)))
 
         return items_list
 
     async def get(self, menu_id: int) -> Menu:
-        cache_one = await self.cache.get_item(menu_id)
+        cache_one = await self.cache.get_item(f"{self.name}-{menu_id}")
         if cache_one:
             print('cache data...')
             print(Menu(**json.loads(cache_one)))
@@ -70,7 +70,7 @@ class MenuRepository:
         if db_item:
             item = Menu(id=str(db_item[0].id), title=db_item[0].title, description=db_item[0].description,
                         submenus_count=db_item.submenus_count, dishes_count=db_item.dishes_count)
-            await self.cache.set_item(db_item[0].id, json.dumps(dict(item)), 60)
+            await self.cache.set_item(f"{self.name}-{db_item[0].id}", json.dumps(dict(item)), 60)
 
             return item
         raise HTTPException(
@@ -87,8 +87,8 @@ class MenuRepository:
             )
         self.db.delete(db_item)
         self.db.commit()
-        await self.cache.remove_item(menu_id)
-        await self.cache.remove_item('all')
+        await self.cache.remove_item(f"{self.name}-{menu_id}")
+        await self.cache.remove_item(f"{self.name}-all")
         return {'status': True, 'message': 'The menu has been deleted'}
 
     async def update(self, menu_id: int, data: MenuCreation) -> Menu:
@@ -109,5 +109,5 @@ class MenuRepository:
                     submenus_count=db_item.submenus_count, dishes_count=db_item.dishes_count)
         self.db.commit()
         self.db.refresh(db_item[0])
-        await self.cache.set_item(db_item[0].id, json.dumps(dict(item)), 60)
+        await self.cache.set_item(f"{self.name}-{db_item[0].id}", json.dumps(dict(item)), 60)
         return item

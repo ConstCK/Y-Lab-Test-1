@@ -35,7 +35,7 @@ class DishesRepository:
             )
 
     async def get_all(self) -> list[type[Dish]] | list:
-        all_cache = await self.cache.get_items()
+        all_cache = await self.cache.get_items(f"{self.name}-all")
         if all_cache:
             print('cache data...')
             return all_cache
@@ -47,13 +47,14 @@ class DishesRepository:
             for item in db_items:
                 result = Dish(id=str(item.id), title=item.title,
                               description=item.description, price=item.price)
-                await self.cache.set_items(json.dumps(dict(result), default=str))
+                await self.cache.set_items(f"{self.name}-all",
+                                           json.dumps(dict(result), default=str))
                 items.append(result)
 
         return items
 
     async def get(self, dish_id: int) -> Dish:
-        one_cache = await self.cache.get_item(dish_id)
+        one_cache = await self.cache.get_item(f"{self.name}-{dish_id}")
         if one_cache:
             print('cache data...')
             return Dish(**json.loads(one_cache))
@@ -62,7 +63,8 @@ class DishesRepository:
         if db_item:
             item = Dish(id=str(db_item.id), title=db_item.title,
                         description=db_item.description, price=round(db_item.price, 2))
-            await self.cache.set_item(db_item.id, json.dumps(dict(item), default=str), 60)
+            await self.cache.set_item(f"{self.name}-{db_item.id}", json.dumps(dict(item),
+                                                                              default=str), 60)
             return item
 
         raise HTTPException(
@@ -79,9 +81,9 @@ class DishesRepository:
             )
         self.db.delete(db_item)
         self.db.commit()
-        await self.cache.remove_item(dish_id)
-        await self.cache.remove_item('all')
-        await self.cache.remove_parent(f'submenu-{db_item.submenu_id}')
+        await self.cache.remove_item(f"{self.name}-{dish_id}")
+        await self.cache.remove_item(f"{self.name}-all")
+        await self.cache.remove_item(f'submenu-{db_item.submenu_id}')
         return {'status': True, 'message': 'The dish has been deleted'}
 
     async def update(self, submenu_id: int, data: DishCreation) -> Dish:
@@ -98,5 +100,6 @@ class DishesRepository:
         self.db.refresh(db_item)
         item = Dish(id=str(db_item.id), title=data.title, description=data.description,
                     price=round(data.price, 2))
-        await self.cache.set_item(db_item.id, json.dumps(dict(item), default=str), 60)
+        await self.cache.set_item(f"{self.name}-{db_item.id}",
+                                  json.dumps(dict(item), default=str), 60)
         return item
