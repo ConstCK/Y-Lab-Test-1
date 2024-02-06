@@ -81,9 +81,7 @@ class DishesRepository:
             )
         self.db.delete(db_item)
         self.db.commit()
-        await self.cache.remove_item(f"{self.name}-{dish_id}")
-        await self.cache.remove_item(f"{self.name}-all")
-        await self.cache.remove_item(f'submenu-{db_item.submenu_id}')
+        await self.cache.remove_all()
         return {'status': True, 'message': 'The dish has been deleted'}
 
     async def update(self, submenu_id: int, data: DishCreation) -> Dish:

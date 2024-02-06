@@ -33,12 +33,8 @@ class CacheRepository:
     async def remove_item(self, key: str) -> None:
         await self.red.delete(key)
 
-    async def remove_parent(self, key: str) -> None:
-        await self.red.delete(key)
-
-    async def remove_relatives(self, pattern: str) -> None:
-        for i in self.red.scan_iter(f"{pattern}*"):
-            await self.red.delete(i)
+    async def remove_all(self) -> None:
+        await self.red.flushall()
 
     async def show_all_keys(self):
         # Получение всех ключей БД

@@ -87,8 +87,7 @@ class MenuRepository:
             )
         self.db.delete(db_item)
         self.db.commit()
-        await self.cache.remove_item(f"{self.name}-{menu_id}")
-        await self.cache.remove_item(f"{self.name}-all")
+        await self.cache.remove_all()
         return {'status': True, 'message': 'The menu has been deleted'}
 
     async def update(self, menu_id: int, data: MenuCreation) -> Menu:

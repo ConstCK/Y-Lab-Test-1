@@ -86,9 +86,7 @@ class SubMenuRepository:
             )
         self.db.delete(db_item)
         self.db.commit()
-        await self.cache.remove_item(f"{self.name}-{submenu_id}")
-        await self.cache.remove_item(f"{self.name}-all")
-        await self.cache.remove_item(f"menu-{db_item.menu_id}")
+        await self.cache.remove_all()
         return {'status': True, 'message': 'The submenu has been deleted'}
 
     async def update(self, submenu_id: int, data: SubMenuCreation) -> SubMenu:
