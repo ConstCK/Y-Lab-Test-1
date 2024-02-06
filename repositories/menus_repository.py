@@ -1,6 +1,6 @@
 import json
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -30,7 +30,7 @@ class MenuRepository:
             return item
         except IntegrityError:
             raise HTTPException(
-                status_code=409,
+                status_code=status.HTTP_409_CONFLICT,
                 detail='Запись с таким именем уже существует'
             )
 
@@ -54,7 +54,7 @@ class MenuRepository:
 
         return items_list
 
-    async def get(self, menu_id: int) -> Menu:
+    async def get(self, menu_id: int) -> MenuTable:
         cache_one = await self.cache.get_item(f"{self.name}-{menu_id}")
         if cache_one:
             print('cache data...')
@@ -74,7 +74,7 @@ class MenuRepository:
 
             return item
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail='menu not found'
         )
 
@@ -100,7 +100,7 @@ class MenuRepository:
 
         if not db_item:
             raise HTTPException(
-                status_code=404,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail='menu not found'
             )
         db_item[0].title = data.title

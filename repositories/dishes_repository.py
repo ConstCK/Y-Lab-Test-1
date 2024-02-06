@@ -1,6 +1,6 @@
 import json
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -30,7 +30,7 @@ class DishesRepository:
 
         except IntegrityError:
             raise HTTPException(
-                status_code=409,
+                status_code=status.HTTP_409_CONFLICT,
                 detail='Запись с таким именем уже существует'
             )
 
@@ -68,7 +68,7 @@ class DishesRepository:
             return item
 
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail='dish not found'
         )
 
@@ -76,7 +76,7 @@ class DishesRepository:
         db_item = self.db.query(DishTable).filter(DishTable.id == dish_id).first()
         if not db_item:
             raise HTTPException(
-                status_code=404,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail=f'Записи с id = {dish_id} не существует'
             )
         self.db.delete(db_item)
@@ -90,7 +90,7 @@ class DishesRepository:
         db_item = self.db.query(DishTable).filter(DishTable.id == submenu_id).first()
         if not db_item:
             raise HTTPException(
-                status_code=404,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail='dish not found'
             )
         db_item.title = data.title

@@ -8,14 +8,13 @@ client = TestClient(app)
 
 MENU_ID = None
 SUBMENU_ID = None
-MENUS_URL = f"{BASE_URL}/menus"
 SUBMENUS_URL = f"{BASE_URL}/menus/{MENU_ID}/submenus"
 
 
 # 1
 def test_create_menu():
     # Создание нового меню
-    response = client.post(app.url_path_for('menus_url'), json=MY_MENU_1)
+    response = client.post(app.url_path_for('get_menus_url'), json=MY_MENU_1)
     assert response.status_code == 201
     assert 'id' in response.json()
     assert response.json().get('submenus_count') == 0
@@ -30,7 +29,7 @@ def test_create_menu():
 # 2
 def test_initial_get_submenus():
     # Получение пустого списка подменю
-    response = client.get(app.url_path_for('submenus_url', menu_id=MENU_ID))
+    response = client.get(app.url_path_for('get_submenus_url', menu_id=MENU_ID))
     assert response.status_code == 200
     assert response.json() == []
 
@@ -38,7 +37,7 @@ def test_initial_get_submenus():
 # 3
 def test_create_submenu():
     # Создание нового подменю
-    response = client.post(app.url_path_for('submenus_url', menu_id=MENU_ID), json=MY_SUBMENU_1)
+    response = client.post(app.url_path_for('create_submenu_url', menu_id=MENU_ID), json=MY_SUBMENU_1)
     assert response.status_code == 201
     assert 'id' in response.json()
     assert response.json().get('dishes_count') == 0
@@ -52,14 +51,14 @@ def test_create_submenu():
 # 4
 def test_duplicate_submenu():
     # Создание уже существующего подменю
-    response = client.post(app.url_path_for('submenus_url', menu_id=MENU_ID), json=MY_SUBMENU_1)
+    response = client.post(app.url_path_for('create_submenu_url', menu_id=MENU_ID), json=MY_SUBMENU_1)
     assert response.status_code == 409
 
 
 # 5
 def test_get_submenus():
     # Получение списка подменю
-    response = client.get(app.url_path_for('submenus_url', menu_id=MENU_ID))
+    response = client.get(app.url_path_for('get_submenus_url', menu_id=MENU_ID))
     assert response.status_code == 200
     assert len(response.json()) > 0
 
@@ -67,7 +66,7 @@ def test_get_submenus():
 # 6
 def test_get_submenu():
     # Получение указанного подменю
-    response = client.get(app.url_path_for('submenu_url', menu_id=MENU_ID, submenu_id=SUBMENU_ID))
+    response = client.get(app.url_path_for('get_submenu_url', menu_id=MENU_ID, submenu_id=SUBMENU_ID))
     assert response.status_code == 200
     assert response.json().get('id') == SUBMENU_ID
     assert response.json().get('title') == MY_SUBMENU_1.get('title')
@@ -78,7 +77,7 @@ def test_get_submenu():
 # 7
 def test_get_none_submenu():
     # Получение указанного подменю
-    response = client.get(app.url_path_for('submenu_url', menu_id=MENU_ID, submenu_id=0))
+    response = client.get(app.url_path_for('get_submenu_url', menu_id=MENU_ID, submenu_id=0))
     assert response.status_code == 404
     assert response.json() == {'detail': 'submenu not found'}
 
@@ -86,9 +85,8 @@ def test_get_none_submenu():
 # 8
 def test_update_submenu():
     # Обновление указанного подменю
-    response = client.patch(app.url_path_for('submenu_url', menu_id=MENU_ID,
-                                             submenu_id=SUBMENU_ID),
-                            json=MY_SUBMENU_2)
+    response = client.patch(app.url_path_for('update_submenu_url', menu_id=MENU_ID,
+                                             submenu_id=SUBMENU_ID), json=MY_SUBMENU_2)
     assert response.status_code == 200
     assert response.json().get('id') == SUBMENU_ID
     assert response.json().get('title') == MY_SUBMENU_2.get('title')
@@ -99,10 +97,10 @@ def test_update_submenu():
 # 9
 def test_update_none_submenu():
     # Обновление несуществующего подменю
-    response = client.patch(f"{SUBMENUS_URL}/0",
-                            json=MY_SUBMENU_2)
-    # response = client.patch(app.url_path_for("submenu_url", menu_id=MENU_ID, submenu_id=0,
-    #                         json=MY_SUBMENU_2))
+    # response = client.patch(f"{SUBMENUS_URL}/0",
+    #                         json=MY_SUBMENU_2)
+    response = client.patch(app.url_path_for('update_submenu_url', menu_id=MENU_ID,
+                                             submenu_id=0), json=MY_SUBMENU_2)
     assert response.status_code == 404
     assert response.json() == {'detail': 'submenu not found'}
 
@@ -110,8 +108,7 @@ def test_update_none_submenu():
 # 10
 def test_get_updated_submenu():
     # Получение обновленного подменю
-    # response = client.get(f"{SUBMENUS_URL}/{MY_SUBMENU_1.get('id')}")
-    response = client.get(app.url_path_for('submenu_url', menu_id=MENU_ID, submenu_id=SUBMENU_ID))
+    response = client.get(app.url_path_for('get_submenu_url', menu_id=MENU_ID, submenu_id=SUBMENU_ID))
     assert response.status_code == 200
     assert response.json().get('id') == SUBMENU_ID
     assert response.json().get('title') == MY_SUBMENU_2.get('title')
@@ -122,7 +119,7 @@ def test_get_updated_submenu():
 # 11
 def test_delete_submenu():
     # Удаление указанного подменю
-    response = client.delete(app.url_path_for('submenu_url', menu_id=MENU_ID,
+    response = client.delete(app.url_path_for('delete_submenu_url', menu_id=MENU_ID,
                                               submenu_id=SUBMENU_ID))
     assert response.status_code == 200
     assert response.json() == {'status': True, 'message': 'The submenu has been deleted'}
@@ -131,14 +128,14 @@ def test_delete_submenu():
 # 12
 def test_delete_none_submenu():
     # Удаление несуществующего подменю
-    response = client.delete(app.url_path_for('submenu_url', menu_id=MENU_ID, submenu_id=0))
+    response = client.delete(app.url_path_for('delete_submenu_url', menu_id=MENU_ID, submenu_id=0))
     assert response.status_code == 404
 
 
 # 13
 def test_final_get_submenus():
     # Получение пустого списка подменю
-    response = client.get(app.url_path_for('submenus_url', menu_id=MENU_ID))
+    response = client.get(app.url_path_for('get_submenus_url', menu_id=MENU_ID))
     assert response.status_code == 200
     assert response.json() == []
 
@@ -146,7 +143,7 @@ def test_final_get_submenus():
 # 14
 def test_final_get_none_submenu():
     # Получение указанного подменю
-    response = client.get(app.url_path_for('submenu_url', menu_id=MENU_ID, submenu_id=SUBMENU_ID))
+    response = client.get(app.url_path_for('get_submenu_url', menu_id=MENU_ID, submenu_id=SUBMENU_ID))
     assert response.status_code == 404
     assert response.json() == {'detail': 'submenu not found'}
 
@@ -154,7 +151,7 @@ def test_final_get_none_submenu():
 # 15
 def test_delete_menu():
     # Удаление указанного меню
-    response = client.delete(app.url_path_for('menu_url', menu_id=MENU_ID))
+    response = client.delete(app.url_path_for('delete_menu_url', menu_id=MENU_ID))
     assert response.status_code == 200
     assert response.json() == {'status': True, 'message': 'The menu has been deleted'}
 
@@ -162,6 +159,6 @@ def test_delete_menu():
 # 16
 def test_final_get_menus():
     # Получение пустого списка меню
-    response = client.get(app.url_path_for('menus_url'))
+    response = client.get(app.url_path_for('get_menus_url'))
     assert response.status_code == 200
     assert response.json() == []

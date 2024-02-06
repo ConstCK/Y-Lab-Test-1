@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -32,7 +32,7 @@ class SubMenuRepository:
 
         except IntegrityError:
             raise HTTPException(
-                status_code=409,
+                status_code=status.HTTP_409_CONFLICT,
                 detail='Запись с таким именем уже существует'
             )
 
@@ -73,7 +73,7 @@ class SubMenuRepository:
             return item
 
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail='submenu not found'
         )
 
@@ -81,7 +81,7 @@ class SubMenuRepository:
         db_item = self.db.query(SubMenuTable).filter(SubMenuTable.id == submenu_id).first()
         if not db_item:
             raise HTTPException(
-                status_code=404,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail=f'Записи с id = {submenu_id} не существует'
             )
         self.db.delete(db_item)
@@ -98,7 +98,7 @@ class SubMenuRepository:
             DishTable).group_by(SubMenuTable.id).first())
         if not db_item:
             raise HTTPException(
-                status_code=404,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail='submenu not found'
             )
         db_item[0].title = data.title
